@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+	 	http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd">
+	
+	<!-- Root Context: defines shared resources visible to all other web components -->
+	
+	<mvc:annotation-driven />
+	
+	<context:component-scan base-package="com.jaza.taskMgmt" />
+	
+	<mvc:resources mapping="/resources/**" location="/resources/" />
+	
+	
+	<jdbc:embedded-database id="dataSource" type="HSQL">
+  	</jdbc:embedded-database>
+	
+  
+	<!-- Database managed by Hibernate -->
+	<bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+        <property name="persistenceUnitName" value="UsersPU" />
+        <property name="dataSource" ref="dataSource" />
+        <property name="packagesToScan" >
+            <list>
+                <value>com.jaza.taskMgmt.db.models</value>
+            </list>
+        </property>
+        <property name="persistenceProvider">
+	        <bean class="org.hibernate.jpa.HibernatePersistenceProvider" />
+	    </property>
+        <property name="jpaProperties">
+	        <map>
+	            <entry key="hibernate.dialect" value="org.hibernate.dialect.H2Dialect" />
+	            <entry key="hibernate.hbm2ddl.auto" value="create" />
+<!-- 	            <entry key="hibernate.hbm2ddl.import_files" value="import_data.sql" /> -->
+	            <entry key="hibernate.show_sql" value="true" />
+	        </map>
+	    </property>
+    </bean>
+ 
+    <bean id="transactionManager"
+    		class="org.springframework.orm.jpa.JpaTransactionManager">
+        <property name="entityManagerFactory" ref="entityManagerFactory" />
+    </bean>
+ 
+    <tx:annotation-driven transaction-manager="transactionManager" />
+ 
+</beans>
